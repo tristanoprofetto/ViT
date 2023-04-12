@@ -88,6 +88,7 @@ class AttentionHead(nn.Module):
 
 class MultiHeadedAttention(nn.Module):
     """
+    Applies several attention mechanisms in parallel
     """
 
     def __init__(self, config):
@@ -185,7 +186,7 @@ class Block(nn.Module):
 
 class Encoder(nn.Module):
     """"
-    
+    Encodes input sequence
     """
 
     def __init__(self, config):

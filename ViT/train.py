@@ -17,13 +17,13 @@ class Trainer:
     Trains ViT model with PyTorch framework
     """
 
-    def __init__(self, model, optimizer, loss_fn, exp_name, device):
+    def __init__(self, model, optimizer, loss_fn, device, experiment_name):
         super().__init__()
         self.model = model
         self.optimizer = optimizer
         self.loss_fn = loss_fn
         self.device = device
-        self.exp_name = exp_name
+        self.experiment_name = experiment_name
 
 
     def train(self, epochs, train, test=None):
@@ -100,8 +100,8 @@ class Trainer:
 
 def get_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--experiment_name', type=str, required=True)
     parser.add_argument('--device', type=str, default="cpu")
-    parser.add_argument('--exp_name', type=str, required=True)
     parser.add_argument('--batch_size', type=int, default=256)
     parser.add_argument('--num_workers', type=int, default=1)
     parser.add_argument('--epochs', type=int, default=1)
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         model=model,
         optimizer=optimizer,
         loss_fn=loss_fn,
-        exp_name=args.exp_name,
+        experiment_name=args.experiment_name,
         device=args.device
     )
 
