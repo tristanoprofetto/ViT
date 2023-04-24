@@ -1,5 +1,5 @@
 from kfp.v2.dsl import component, Input, Output, Model, Metrics, Dataset
-from pipeline.components.data_prep.task_data_prep import run_data_prep_task
+from pipeline.training.data_prep.task_data_prep import run_data_prep_task
 
 @component(
     base_image='',

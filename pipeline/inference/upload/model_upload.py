@@ -1,17 +1,18 @@
+import argparse
 from typing import Dict, Optional, Sequence
 
-import google.cloud.aiplatform as aip
+import google.cloud.aiplatform as vertex_ai
 
 
-def upload_model(
+def run_upload_model_task(
     project: str,
     location: str,
+    description: str,
     model_display_name: str,
-    artifact_uri: Optional[str],
+    model_artifact_uri: str,
     serving_container_image_uri: str,
-    serving_container_predict_route: Optional[str] = None,
-    serving_container_health_route: Optional[str] = None,
-    description: Optional[str] = None,
+    serving_container_predict_route: str,
+    serving_container_health_route: str,
     serving_container_command: Optional[Sequence[str]] = None,
     serving_container_args: Optional[Sequence[str]] = None,
     serving_container_environment_variables: Optional[Dict[str, str]] = None,
@@ -21,14 +22,9 @@ def upload_model(
     Uploads model to Vertex AI Model Registry
     """
 
-    aip.init(
-        project=project, 
-        location=location
-    )
-
-    model = aip.Model.upload(
+    model = vertex_ai.Model.upload(
         display_name=model_display_name,
-        artifact_uri=artifact_uri,
+        artifact_uri=model_artifact_uri,
         serving_container_image_uri=serving_container_image_uri,
         serving_container_predict_route=serving_container_predict_route,
         serving_container_health_route=serving_container_health_route,
@@ -42,3 +38,22 @@ def upload_model(
     model.wait()
 
     return model
+
+
+def get_args():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--project')
+    parser.add_argument('--region')
+    parser.add_argument('--model_artifact_uri')
+    parser.add_argument('--serving_image_uri')
+    parser.add_argument('--health_route')
+    parser.add_argument('--predict_route')
+
+    args = parser.parse_args()
+
+    return args
+
+
+if __name__ == "__main__":
+    args = get_args()
