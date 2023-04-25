@@ -5,8 +5,6 @@ import google.cloud.aiplatform as vertex_ai
 
 
 def run_upload_model_task(
-    project: str,
-    location: str,
     description: str,
     model_display_name: str,
     model_artifact_uri: str,

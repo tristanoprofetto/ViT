@@ -1,12 +1,24 @@
 import os
+from configparser import ConfigParser
+
 from kfp.dsl import components, pipeline
 from kfp.v2.dsl import component
+from google_cloud_pipeline_components.v1.custom_job import create_custom_training_job_from_component
 
 
-def training_pipeline():
+def build_training_pipeline(cfg: ConfigParser):
 
     data_prepare_task = components.load_component_from_file('./component_configs/data_preperation_component.yaml')
     model_training_task = components.load_component_from_file('./component_configs/model_training_component.yaml')
+
+    custom_training_job_op = create_custom_training_job_from_component(
+        component_spec=model_training_task, 
+        machine_type=os.environ.get('MACHINE_TYPE'), 
+        acclerator_type=os.environ.get('ACCELERATOR_TYPE'),
+        accelerator_count=int(os.environ.get('ACCELERATOR_COUNT')),
+        replica_count=int(os.environ.get('REPLICA_COUNT')),
+        service_account=os.environ.get('SERVICE_ACCOUNT')
+    )
 
     @pipeline(
         name='training-pipeline',
@@ -34,7 +46,7 @@ def training_pipeline():
         )
 
         model_training_task_results = (
-            model_training_task(
+            custom_training_job_op(
                 experiment_name=experiment_name,
                 device=device,
                 epochs=epochs,

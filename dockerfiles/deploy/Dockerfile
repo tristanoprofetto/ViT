@@ -5,9 +5,9 @@ COPY ./dockerfiles/deploy/requirements.txt ./requirements.txt
 RUN pip3 install requirements.txt
 
 # copy model artifacts, custom handler and other dependencies
-COPY ./custom_text_handler.py /home/model-server/
+COPY ./inference/handler.py /home/model-server/
 COPY ./index_to_name.json /home/model-server/
-COPY ./model/$APP_NAME/ /home/model-server/
+COPY ./$AIP_STORAGE_URI/ /home/model-server/
 
 # create torchserve configuration file
 USER root
@@ -19,13 +19,15 @@ USER model-server
 # expose health and prediction listener ports from the image
 EXPOSE 7080
 EXPOSE 7081
+EXPOSE $AIP_HEALTH_ROUTE
+EXPOSE $AIP_PREDICT_ROUTE
 
 # create model archive file packaging model artifacts and dependencies
 RUN torch-model-archiver -f \
   --model-name=$APP_NAME \
   --version=1.0 \
   --serialized-file=/home/model-server/pytorch_model.bin \
-  --handler=/home/model-server/custom_text_handler.py \
+  --handler=/home/model-server/handler.py \
   --extra-files "/home/model-server/config.json,/home/model-server/tokenizer.json,/home/model-server/training_args.bin,/home/model-server/tokenizer_config.json,/home/model-server/special_tokens_map.json,/home/model-server/vocab.txt,/home/model-server/index_to_name.json" \
   --export-path=/home/model-server/model-store
 

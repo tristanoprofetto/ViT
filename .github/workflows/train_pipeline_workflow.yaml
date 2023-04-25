@@ -1,0 +1,58 @@
+name: Execute Vertex AI Pipelines Job
+
+on:
+  push:
+    branches:
+      - main
+
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  GCP_STORAGE_BUCKET: ${{ secrets.GCP_STORAGE_BUCKET }}
+  TRAIN_PIPELINE_ROOT: ${{ secrets.TRAIN_PIPELINE_ROOT }}
+  TRAIN_PIPELINE_ID: ${{ secrets.TRAIN_PIPELINE_ID }}
+  TRAIN_IMAGE_REPO: ${{ secrets.TRAIN_IMAGE_REPO }}
+  TRAIN_MACHINE_TYPE: ${{ vars.TRAIN_MACHINE_TYPE }}
+  TRAIN_ACCELERATOR_TYPE: ${{ vars.TRAIN_ACCELERATOR_TYPE }}
+  TRAIN_ACCELERATOR_COUNT: ${{ vars.TRAIN_ACCELERATOR_COUNT} }
+
+
+jobs:
+  execute_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Configure Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '354.0.0'
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure Docker
+        uses: docker/setup-buildx-action@v1
+      
+      - name: Execute deployment script
+        run: |
+          chmod +x ./automation_scripts/train/execute.sh
+          ./automation_scripts/train/execute.sh
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: username/image-name:latest
+      
+      - name: Execute Vertex AI Pipelines Job
+        uses: google-github-actions/vertex-ai-pipelines@main
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          location: ${{ secrets.GCP_REGION }}
+          api_key: ${{ secrets.API_KEY }}
+          job_spec_path: path/to/job_spec.yaml
+          container_image_uri: gcr.io/my-project/my-container:latest

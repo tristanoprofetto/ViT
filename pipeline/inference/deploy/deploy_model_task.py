@@ -10,13 +10,16 @@ def deploy_model_task(
         machine_type: str,
         accelerator_type: str,
         accelerator_count : int,
-        traffic_split: int,
+        traffic_percentage: int,
         autoscaling_nodes_min: int,
         autoscaling_nodes_max: int,
         autoscaling_cpu_utilization: int
 ):
     """
     Deploys Model to Endpoint
+
+    Args:
+        endpoint
     """
 
     endpoint.deploy(
@@ -25,15 +28,9 @@ def deploy_model_task(
         machine_type=machine_type,
         accelerator_type=accelerator_type,
         accelerator_count=accelerator_count,
-        traffic_percentage=traffic_split,
+        traffic_percentage=traffic_percentage,
         min_replica_count=autoscaling_nodes_min,
         max_replica_count=autoscaling_nodes_max,
         autoscaling_target_cpu_utilization=autoscaling_cpu_utilization
-
     )
 
-
-def get_args():
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--endpoint')

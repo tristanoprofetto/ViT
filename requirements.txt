@@ -1,6 +1,8 @@
 torch==1.13.1
 torchvision==0.14.1
 matplotlib==3.7.1
+torch-model-archiver
 numpy
 google-cloud-aiplatform
+google-cloud-pipeline-components
 kfp

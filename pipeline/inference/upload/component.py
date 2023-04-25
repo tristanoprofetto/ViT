@@ -6,6 +6,7 @@ from pipeline.inference.upload.model_upload import run_model_upload_task
     output_component_file='component_configs/upload_model_component.yaml'
 )
 def data_preperation_component(
+    model_display_name: str,
     model_artifact_uri: str,
     serving_image_uri: str,
     serving_container_predict_route: str,
@@ -17,17 +18,18 @@ def data_preperation_component(
     Model Upload component
 
     Args:
-        model (Input[Model]): 
-        download (bool):
-        trainset (Output[Dataset]):
-        testset (Output[Dataset]):
+        model_display_name (str): 
+        model_artifact_uri (str):
+        serving_image_uri (str):
+        serving_image_predict_route (str):
+        model (Output[Model]):
 
     Returns:
 
     """
 
     try:
-        run_model_upload_task(
+        model = run_model_upload_task(
             model_artifact_uri=model_artifact_uri.path,
             serving_image_uri=serving_image_uri,
             serving_container_predict_route=serving_container_predict_route,
@@ -35,6 +37,9 @@ def data_preperation_component(
             serving_container_ports=serving_container_ports
             
         )
+
+        with open(model.path, 'w') as writer:
+            writer.write(model)
 
     except Exception as e:
         print(e)
