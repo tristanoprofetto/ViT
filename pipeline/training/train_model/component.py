@@ -1,6 +1,6 @@
 from kfp.v2.dsl import component, Input, Output, Model, Metrics
-from training.train import Trainer
-from training.model import ViT
+
+from pipeline.training.train_model.task_train_model import run_train_model_task
 
 
 @component(
@@ -38,30 +38,12 @@ def model_training_component(
     Returns:
 
     """
+    try:
+        run_train_model_task(
 
-    with open(trainset.path, 'r') as file:
-       train_data = file.read()
-
-    with open(testset.path, 'r') as file:
-       test_data = file.read()
-
-    trainer = Trainer(
-        model = ViT,
-        optimizer=optimzer,
-        loss_fn=loss_fn,
-        device=device
-    )
-
-    trainer.train(
-       train=train_data, 
-       test=test_data, 
-       epochs=epochs
-    )
-
-    accuracy, loss = trainer.evaluate(test=test_data)
-    
-    metrics.log_metric('accuracy', accuracy)
-    metrics.log_metric('loss', loss)
+        )
+    except Exception as e:
+        print(e)
 
     
 

@@ -41,8 +41,7 @@ def run_upload_model_task(
 def get_args():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--project')
-    parser.add_argument('--region')
+    parser.add_argument('--model_display_name')
     parser.add_argument('--model_artifact_uri')
     parser.add_argument('--serving_image_uri')
     parser.add_argument('--health_route')
