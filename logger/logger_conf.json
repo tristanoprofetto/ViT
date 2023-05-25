@@ -1,0 +1,32 @@
+{
+    "version": 1,
+    "disable_existing_loggers": true,
+    "loggers": {
+        "root": {
+            "level": "INFO",
+            "handlers": ["stdout"],
+            "propagate": false
+        }
+    },
+    "filters": {
+        "environment_info_filter": {
+            "()": "__main__.EnvironmentInfoFilter",
+            "env_variables": ["NODE_IP"]
+        }
+    },
+    "formatters": {
+        "json_formatter": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "format": "%(asctime)s %(node_ip)s %(name)s %(pathname)s %(lineno)s %(levelname)s %(message)s"
+        }
+    },
+    "handlers": {
+        "stdout":{
+            "level":"INFO",
+            "class":"logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": "json_formatter",
+            "filters": ["environment_info_filter"]
+        }
+    }    
+}
